@@ -1,0 +1,88 @@
+const Cidade = require('./../models/cidadeModel');
+const APIFeatures = require('./../utils/apiFeatures');
+
+exports.getAllCidade = async (req, res) => {
+  try {
+    // EXECUTE QUERY
+    const features = new APIFeatures(Cidade.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+    const cidade = await features.query;
+
+    // SEND RESPONSE
+    res.status(200).json({
+      status: 'success',
+      results: cidade.length,
+      data: {
+        cidade
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
+
+exports.getAllCidadeEstado = async (req, res) => {
+  //todas as cidades de um estado
+  try {
+    const cidade = await Cidade.find({ estado: req.params.estado });
+
+    res.status(200).json({
+      status: 'success',
+      results: cidade.length,
+      data: {
+        cidade
+      }
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
+
+
+exports.getCidade = async (req, res) => {
+  try {
+    const cidade = await Cidade.findOne({ nome: req.params.nome });  
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        cidade
+      }
+    });
+  } catch (err) {
+    console.log(err)
+    res.status(404).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
+
+exports.createCidade = async (req, res) => {
+  try {
+    // const newTour = new Tour({})
+    // newTour.save()
+    const newCidade = await Cidade.create(req.body);
+    res.status(201).json({
+      status: 'success',
+      data: {
+        Cidade: newCidade
+      }
+    });
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
+};
